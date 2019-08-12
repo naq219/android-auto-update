@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.loveplusplus.update.AppUtils;
+import com.loveplusplus.update.CheckUpdateTask;
 import com.loveplusplus.update.UpdateChecker;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,14 +20,23 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button btn1 = (Button) findViewById(R.id.button1);
+        final Button btn1 = (Button) findViewById(R.id.button1);
         Button btn2 = (Button) findViewById(R.id.button2);
+        String url="http://static.lemyde.com/updatecrm/updatecrm.json";
+        UpdateChecker.setUrl(url,this);
+
 
         btn1.setOnClickListener(new OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                UpdateChecker.checkForDialog(MainActivity.this);
+                //UpdateChecker.checkForDialog(MainActivity.this);
+                UpdateChecker.checkListener(getBaseContext(), new CheckUpdateTask.CheckUpdateTaskListener() {
+                    @Override
+                    public void onChecked(boolean isHaveNewUpdate) {
+                        Toast.makeText(MainActivity.this,"daco:"+isHaveNewUpdate,Toast.LENGTH_LONG).show();
+                    }
+                });
             }
         });
         btn2.setOnClickListener(new OnClickListener() {

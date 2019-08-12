@@ -2,7 +2,9 @@ package com.loveplusplus.update;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,27 +17,43 @@ import org.json.JSONObject;
  * @author feicien (ithcheng@gmail.com)
  * @since 2016-07-05 19:21
  */
-class CheckUpdateTask extends AsyncTask<Void, Void, String> {
+public class CheckUpdateTask extends AsyncTask<Void, Void, String> {
 
     private ProgressDialog dialog;
     private Context mContext;
     private int mType;
     private boolean mShowProgressDialog;
-    private static final String url = Constants.UPDATE_URL;
+    //private static final String url = Constants.UPDATE_URL;
+    String url="";
+    private CheckUpdateTaskListener checkUpdateTaskListener=null;
 
     CheckUpdateTask(Context context, int type, boolean showProgressDialog) {
 
         this.mContext = context;
         this.mType = type;
         this.mShowProgressDialog = showProgressDialog;
+        url= PreferenceManager.getDefaultSharedPreferences(context).getString("updatertelpoo_url","");
 
+    }
+    CheckUpdateTask(Context context, int type, boolean showProgressDialog,CheckUpdateTaskListener checkUpdateTaskListener) {
+
+        this.mContext = context;
+        this.mType = type;
+        this.mShowProgressDialog = showProgressDialog;
+        url= PreferenceManager.getDefaultSharedPreferences(context).getString("updatertelpoo_url","");
+
+        this.checkUpdateTaskListener = checkUpdateTaskListener;
+    }
+
+    public interface CheckUpdateTaskListener{
+        public void onChecked(boolean isHaveNewUpdate);
     }
 
 
     protected void onPreExecute() {
         if (mShowProgressDialog) {
             dialog = new ProgressDialog(mContext);
-            dialog.setMessage(mContext.getString(R.string.android_auto_update_dialog_checking));
+            dialog.setMessage(mContext.getString(R.string.aau_dialog_checking));
             dialog.show();
         }
     }
@@ -64,13 +82,22 @@ class CheckUpdateTask extends AsyncTask<Void, Void, String> {
             int versionCode = AppUtils.getVersionCode(mContext);
 
             if (apkCode > versionCode) {
+                if (checkUpdateTaskListener!=null){
+                    checkUpdateTaskListener.onChecked(true);
+                    return;
+                }
                 if (mType == Constants.TYPE_NOTIFICATION) {
                     new NotificationHelper(mContext).showNotification(updateMessage, apkUrl);
                 } else if (mType == Constants.TYPE_DIALOG) {
                     showDialog(mContext, updateMessage, apkUrl);
                 }
             } else if (mShowProgressDialog) {
-                Toast.makeText(mContext, mContext.getString(R.string.android_auto_update_toast_no_new_update), Toast.LENGTH_SHORT).show();
+                if (checkUpdateTaskListener!=null){
+                    checkUpdateTaskListener.onChecked(false);
+                    return;
+                }
+
+                Toast.makeText(mContext, mContext.getString(R.string.aau_toast_no_new_update), Toast.LENGTH_SHORT).show();
             }
 
         } catch (JSONException e) {

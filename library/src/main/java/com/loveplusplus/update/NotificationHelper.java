@@ -28,8 +28,8 @@ public class NotificationHelper extends ContextWrapper {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, "应用更新", NotificationManager.IMPORTANCE_LOW);
-            mChannel.setDescription("应用有新版本");
+            NotificationChannel mChannel = new NotificationChannel(CHANNEL_ID, getString(R.string.aau_capnhatungdung), NotificationManager.IMPORTANCE_LOW);
+            mChannel.setDescription(getString(R.string.aau_ungdungnaycophienbanmoi));
             mChannel.enableLights(true); //是否在桌面icon右上角展示小红点
             getManager().createNotificationChannel(mChannel);
         }
@@ -55,7 +55,7 @@ public class NotificationHelper extends ContextWrapper {
     public void updateProgress(int progress) {
 
 
-        String text = this.getString(R.string.android_auto_update_download_progress, progress);
+        String text = this.getString(R.string.aau_download_progress, progress);
 
         PendingIntent pendingintent = PendingIntent.getActivity(this, 0, new Intent(), PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -69,7 +69,7 @@ public class NotificationHelper extends ContextWrapper {
 
     private NotificationCompat.Builder getNofity(String text) {
         return new NotificationCompat.Builder(getApplicationContext(), CHANNEL_ID)
-                .setTicker(getString(R.string.android_auto_update_notify_ticker))
+                .setTicker(getString(R.string.aau_notify_ticker))
                 .setContentTitle("应用更新")
                 .setContentText(text)
                 .setSmallIcon(getSmallIcon())

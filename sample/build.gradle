@@ -15,7 +15,7 @@ android {
         applicationId "com.loveplusplus.update.sample"
         minSdkVersion 14
         targetSdkVersion 27
-        versionCode 3
+        versionCode 1
         versionName "1.2"
     }
 
